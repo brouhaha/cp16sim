@@ -2910,49 +2910,6 @@ void disassemble(uint16_t addr, uint32_t uinst)
 }
 
 
-int perm;
-int xor;
-
-uint8_t permute_tsr(uint8_t v)
-{
-  uint8_t r = 0;
-  uint8_t a = (v >> 2) & 1;
-  uint8_t b = (v >> 1) & 1;
-  uint8_t c = (v >> 0) & 1;
-
-  switch (perm >> 1)
-    {
-    case 0:
-      r |= (a << 2);
-      if (perm & 1)
-	r |= ((c << 1) | b);
-      else
-	r |= ((b << 1) | c);
-      break;
-    case 1:
-      r |= (b << 2);
-      if (perm & 1)
-	r |= ((c << 1) | a);
-      else
-	r |= ((a << 1) | c);
-      break;
-    case 2:
-      r |= (c << 2);
-      if (perm & 1)
-	r |= ((b << 1) | a);
-      else
-	r |= ((a << 1) | b);
-      break;
-    default:
-      fprintf(stderr, "invalid TSR permutation\n");
-      exit(EX_SOFTWARE);
-    }
-
-  r ^= xor;
-  return r;
-}
-
-
 void sim_inst(proc_t *proc)
 {
   int tr_num;
@@ -3032,10 +2989,8 @@ void sim_inst(proc_t *proc)
 
   if (translation && translation->ltsr)
     {
-      uint8_t new_tsr;
-      new_tsr = permute_tsr(translation->translation_state);
-      printf("translation ltsr, tsr %d, loading state %d\n", translation->translation_state, new_tsr);
-      proc->translation_state = new_tsr;;
+      printf("translation ltsr %d\n", translation->translation_state);
+      proc->translation_state = translation->translation_state;;
     }
 
   if (proc->uinst & UINST_RNI)
@@ -3814,24 +3769,6 @@ void load_microcode(char *fn)
 int main(int argc, char *argv[])
 {
   proc_t proc;
-
-  if (argc != 3)
-    {
-      fprintf(stderr, "need permutation and xor arguments\n");
-      exit(EX_USAGE);
-    }
-  perm = atoi(argv[1]);
-  xor = atoi(argv[2]);
-  if ((perm < 0) || (perm > 5))
-    {
-      fprintf(stderr, "permutation must be in range 0..5\n");
-      exit(EX_USAGE);
-    }
-  if ((xor < 0) || (xor > 7))
-    {
-      fprintf(stderr, "permutation must be in range 0..7\n");
-      exit(EX_USAGE);
-    }
 
   load_microcode("wd9000-141518-ucode.txt");
  
