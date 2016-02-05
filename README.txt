@@ -25,6 +25,7 @@ cp16sim currently simulates the WD9000. Support for the LSI-11 and WD16
 will be added when the PLAs of the control stores of those versions of
 the chipset have been transcribed.
 
-As of 2016-02-04, there are known to be serious bugs in cp16sim; it
-works well enough to execute the first few dozen p-code instructions
-of the ACD PDQ-3 boot ROM before going into the weeds.
+As of 2016-02-04, cp16sim is incomplete, especially regarding I/O, and
+there are known to be serious bugs. It works well enough to execute
+the first few dozen p-code instructions of the ACD PDQ-3 boot ROM
+before going into the weeds.
